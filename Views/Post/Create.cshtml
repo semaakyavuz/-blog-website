@@ -1,0 +1,34 @@
+@{
+    ViewData["Title"] = "Yeni Yazı Ekle";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Yeni Yazı Paylaş</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" asp-controller="Post" asp-action="Create">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Başlık</label>
+                    <input type="text" class="form-control" id="title" name="title" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="content" class="form-label">İçerik</label>
+                    <textarea class="form-control" id="content" name="content" rows="6" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-success">📝 Yazıyı Paylaş</button>
+                <a asp-action="Index" class="btn btn-secondary ms-2">← Geri Dön</a>
+            </form>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success mt-3">
+                    @TempData["Success"]
+                </div>
+            }
+        </div>
+    </div>
+</div>

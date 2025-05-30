@@ -1,0 +1,21 @@
+@model _blog_website.Models.Post
+
+@{
+    ViewData["Title"] = "Yazı Detayı";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-body">
+            <h2 class="card-title">@Model.Title</h2>
+            <p class="card-subtitle text-muted mb-2">
+                <small>Oluşturulma Tarihi: @Model.CreatedAt.ToString("dd MMMM yyyy")</small>
+            </p>
+            <hr />
+            <p class="card-text">@Model.Content</p>
+        </div>
+        <div class="card-footer bg-light">
+            <a class="btn btn-secondary" asp-controller="Post" asp-action="Index">← Tüm Yazılara Dön</a>
+        </div>
+    </div>
+</div>

@@ -1,7 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 using _blog_website.Data;
 using _blog_website.Models;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace _blog_website.Controllers
 {
@@ -14,21 +18,33 @@ namespace _blog_website.Controllers
             _context = context;
         }
 
-        // GET: /Account/Login
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        // POST: /Account/Login
         [HttpPost]
-        public IActionResult Login(string email, string password)
+        public async Task<IActionResult> Login(string email, string password)
         {
             var user = _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
             if (user != null)
             {
-                TempData["Success"] = "Giriş başarılı!";
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.FullName ?? ""),
+                    new Claim(ClaimTypes.Email, user.Email ?? ""),
+                    new Claim(ClaimTypes.Role, user.Role ?? "")
+                };
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                if (user.Role == "Admin")
+                    return RedirectToAction("Dashboard", "Admin");
+
                 return RedirectToAction("Index", "Home");
             }
 
@@ -36,14 +52,12 @@ namespace _blog_website.Controllers
             return View();
         }
 
-        // GET: /Account/Register
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
-        // POST: /Account/Register
         [HttpPost]
         public IActionResult Register(string fullName, string email, string password)
         {
@@ -58,7 +72,7 @@ namespace _blog_website.Controllers
                 FullName = fullName,
                 Email = email,
                 Password = password,
-                Username = email.Split('@')[0], // Kullanıcı adı otomatik atanıyor
+                Username = email.Split('@')[0],
                 Role = "User"
             };
 
@@ -66,6 +80,13 @@ namespace _blog_website.Controllers
             _context.SaveChanges();
 
             return RedirectToAction("Login");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home"); // ← Giriş sayfası yerine anasayfa
         }
     }
 }
