@@ -1,0 +1,60 @@
+@model List<_blog_website.Models.Post>
+
+@{
+    ViewData["Title"] = "Yazılar";
+    var currentUserEmail = User.Identity?.IsAuthenticated == true
+    ? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+    : null;
+}
+
+<h2 class="mb-4">📚 Tüm Blog Yazıları</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Henüz yazı eklenmemiş.</div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var post in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm border-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">@post.Title</h5>
+                        <p class="card-text text-muted">
+                            @(post.Content?.Length > 100 ? post.Content.Substring(0, 100) + "..." : post.Content)
+                        </p>
+                        <a class="btn btn-sm btn-primary me-2" asp-controller="Post" asp-action="Details"
+                            asp-route-id="@post.Id">
+                            Devamını Oku
+                        </a>
+
+                        @if (User.Identity?.IsAuthenticated == true && post.AuthorEmail == currentUserEmail)
+                        {
+                            <a class="btn btn-sm btn-outline-secondary me-2" asp-controller="Post" asp-action="Edit"
+                                asp-route-id="@post.Id">
+                                Düzenle
+                            </a>
+
+                            <form method="post" asp-controller="Post" asp-action="Delete" asp-route-id="@post.Id" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Bu yazıyı silmek istediğinize emin misiniz?');">
+                                    Sil
+                                </button>
+                            </form>
+                        }
+                    </div>
+                    <div class="card-footer text-muted">
+                        <small>📅 @post.CreatedAt.ToString("dd MMM yyyy")</small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

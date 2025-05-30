@@ -4,6 +4,11 @@
 
 <h2>Giriş Yap</h2>
 
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
 <form method="post" asp-controller="Account" asp-action="Login">
     <div class="mb-3">
         <label for="Email">Email</label>
@@ -15,4 +20,3 @@
     </div>
     <button type="submit" class="btn btn-primary">Giriş Yap</button>
 </form>
-dotnet run
