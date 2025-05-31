@@ -1,0 +1,74 @@
+## Build results
+bin/
+obj/
+Debug/
+Release/
+*.exe
+*.dll
+*.pdb
+*.cache
+*.log
+
+## VS-specific folders/files
+.vs/
+*.user
+*.suo
+*.sdf
+*.dbmdl
+*.dbproj.schemaview
+*.vssscc
+*.vsp
+*.vspscc
+*.psess
+*.vspx
+*.vsmdi
+*.cachefile
+
+## Rider & JetBrains
+.idea/
+
+## User-specific files
+*.rsuser
+*.sln.docstates
+
+## Package managers
+packages/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Web
+wwwroot/lib/
+wwwroot/node_modules/
+node_modules/
+
+## Configs
+appsettings.Development.json
+appsettings.Local.json
+
+## Others
+*.tmp
+*.bak
+*.swp
+*~
+*.sqlite
+*.mdf
+*.ldf
+*.db
+
+## Backup files
+*.old
+*.orig
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# Unit test result files
+*.coverage
+*.coveragexml
+TestResults/
+
+# Azure Functions artifacts
+local.settings.json

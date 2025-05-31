@@ -1,11 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using _blog_website.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using _blog_website.Business.Interfaces;
+using _blog_website.Business.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IPostService, PostService>();
+
 
 // Veritabanı bağlantısı
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

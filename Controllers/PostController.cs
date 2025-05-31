@@ -1,23 +1,40 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using _blog_website.Data;
 using _blog_website.Models;
+using _blog_website.Business.Interfaces;
 using System.Security.Claims;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace _blog_website.Controllers
 {
     [Authorize]
     public class PostController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IPostService _postService;
 
-        public PostController(ApplicationDbContext context)
+        public PostController(IPostService postService)
         {
-            _context = context;
+            _postService = postService;
         }
 
-        // === YAZI OLUŞTURMA ===
+        // === TÜM YAZILARI LİSTELEME ===
+        [AllowAnonymous]
+        public async Task<IActionResult> Index()
+        {
+            var posts = await _postService.GetAllPostsAsync();
+            return View(posts);
+        }
+
+        // === DETAY ===
+        [AllowAnonymous]
+        public async Task<IActionResult> Details(int id)
+        {
+            var post = await _postService.GetPostByIdAsync(id);
+            if (post == null) return NotFound();
+            return View(post);
+        }
+
+        // === OLUŞTURMA ===
         [HttpGet]
         public IActionResult Create()
         {
@@ -25,12 +42,10 @@ namespace _blog_website.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(string title, string content)
+        public async Task<IActionResult> Create(string title, string content)
         {
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
-
-            if (string.IsNullOrEmpty(userEmail))
-                return RedirectToAction("Login", "Account");
+            if (string.IsNullOrEmpty(userEmail)) return RedirectToAction("Login", "Account");
 
             var post = new Post
             {
@@ -40,41 +55,16 @@ namespace _blog_website.Controllers
                 CreatedAt = DateTime.Now
             };
 
-            _context.Posts.Add(post);
-            _context.SaveChanges();
-
+            await _postService.CreatePostAsync(post);
             TempData["Success"] = "Yazı başarıyla eklendi.";
             return RedirectToAction("Index");
         }
 
-        // === TÜM YAZILARI LİSTELEME ===
-        [AllowAnonymous]
-        public IActionResult Index()
-        {
-            var posts = _context.Posts
-                                .OrderByDescending(p => p.CreatedAt)
-                                .ToList();
-
-            return View(posts);
-        }
-
-        // === YAZI DETAYI ===
-        [AllowAnonymous]
-        public IActionResult Details(int id)
-        {
-            var post = _context.Posts.FirstOrDefault(p => p.Id == id);
-
-            if (post == null)
-                return NotFound();
-
-            return View(post);
-        }
-
-        // === YAZI GÜNCELLEME ===
+        // === GÜNCELLE ===
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var post = _context.Posts.FirstOrDefault(p => p.Id == id);
+            var post = await _postService.GetPostByIdAsync(id);
             if (post == null || post.AuthorEmail != User.FindFirstValue(ClaimTypes.Email))
                 return Unauthorized();
 
@@ -82,33 +72,29 @@ namespace _blog_website.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(int id, string title, string content)
+        public async Task<IActionResult> Edit(int id, string title, string content)
         {
-            var post = _context.Posts.FirstOrDefault(p => p.Id == id);
+            var post = await _postService.GetPostByIdAsync(id);
             if (post == null || post.AuthorEmail != User.FindFirstValue(ClaimTypes.Email))
                 return Unauthorized();
 
             post.Title = title;
             post.Content = content;
-            _context.SaveChanges();
+            await _postService.UpdatePostAsync(post);
 
             TempData["Success"] = "Yazı başarıyla güncellendi.";
             return RedirectToAction("Index");
         }
 
+        // === SİL ===
         [HttpPost]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var post = _context.Posts.FirstOrDefault(p => p.Id == id);
-            if (post == null || post.AuthorEmail != User.FindFirstValue(ClaimTypes.Email))
-                return Unauthorized();
-
-            _context.Posts.Remove(post);
-            _context.SaveChanges();
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            await _postService.DeletePostAsync(id, userEmail);
 
             TempData["Success"] = "Yazı başarıyla silindi.";
             return RedirectToAction("Index");
         }
-
     }
 }
