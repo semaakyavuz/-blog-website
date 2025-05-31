@@ -1,8 +1,11 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "-blog-website", "-blog-website.csproj", "{FFE8F7E9-90F5-7B48-84E4-181F97C63379}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "-blog-website", "-blog-website.csproj", "{FFE8F7E9-90F5-7B48-84E4-181F97C63379}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Çözüm Öğeleri", "Çözüm Öğeleri", "{DB037D3D-B3E1-49DD-9679-DB1B0B8DAEB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
