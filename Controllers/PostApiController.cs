@@ -4,6 +4,8 @@ using _blog_website.Business.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using _blog_website.Dtos;
+using AutoMapper;
 
 namespace _blog_website.Controllers
 {
@@ -12,10 +14,12 @@ namespace _blog_website.Controllers
     public class PostApiController : ControllerBase
     {
         private readonly IPostService _postService;
+        private readonly IMapper _mapper;
 
-        public PostApiController(IPostService postService)
+        public PostApiController(IPostService postService, IMapper mapper)
         {
             _postService = postService;
+            _mapper = mapper;
         }
 
         // === TÜM POSTLARI GETİR ===
@@ -24,7 +28,8 @@ namespace _blog_website.Controllers
         public async Task<IActionResult> GetAll()
         {
             var posts = await _postService.GetAllPostsAsync();
-            return Ok(posts);
+            var postDtos = _mapper.Map<List<PostDto>>(posts);
+            return Ok(postDtos);
         }
 
         // === TEK POST GETİR ===
@@ -33,10 +38,10 @@ namespace _blog_website.Controllers
         public async Task<IActionResult> Get(int id)
         {
             var post = await _postService.GetPostByIdAsync(id);
-            if (post == null)
-                return NotFound();
+            if (post == null) return NotFound();
 
-            return Ok(post);
+            var postDto = _mapper.Map<PostDto>(post);
+            return Ok(postDto);
         }
 
         // === POST EKLE ===
