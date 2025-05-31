@@ -41,6 +41,8 @@ app.UseRouting();
 app.UseAuthentication(); // → önce authentication
 app.UseAuthorization();  // sonra authorization
 
+app.MapControllers(); // Api bağlantısı için
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
