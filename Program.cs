@@ -3,6 +3,7 @@ using _blog_website.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using _blog_website.Business.Interfaces;
 using _blog_website.Business.Services;
+using _blog_website.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IPostService, PostService>();
 
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 // Veritabanı bağlantısı
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
